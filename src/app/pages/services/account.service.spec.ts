@@ -2,7 +2,9 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { TestBed } from '@angular/core/testing';
 import { ErrorMessagingService } from 'src/app/core/services/error-messaging.service';
 import { ApiConst } from '../constants/api-const';
+import { UrlConst } from '../constants/url-const';
 import { SignInRequestDto } from '../models/dtos/requests/sign-in-request-dto';
+import { MenuListResponseDto } from '../models/dtos/responses/menu-list-response-dto';
 import { SignInResponseDto } from '../models/dtos/responses/sign-in-response-dto';
 import { User } from '../models/user';
 
@@ -71,6 +73,96 @@ describe('AccountService', () => {
     });
   });
 
+  describe('#getMenu', () => {
+    const webApiUrl = ApiConst.PATH_API_ROOT + ApiConst.PATH_MENU;
+
+    it('should return expected response', () => {
+      const expectedMenuListResponseDto = createExpectedMenuListResponseDto();
+
+      // Subscribes to api.
+      service.getMenu().subscribe((response) => {
+        expect(response).toEqual(expectedMenuListResponseDto);
+        expect(errorMessagingServiceSpy.setupPageErrorMessageFromResponse.calls.count()).toBe(0);
+      }, fail);
+
+      // Responds with the mock
+      const req = httpTestingController.expectOne(webApiUrl);
+      expect(req.request.method).toEqual('GET');
+      req.flush(expectedMenuListResponseDto);
+    });
+
+    it('should return null when response is 404 Not Found', () => {
+      const errorStatus = 404;
+      const errorMessage = '404 Not Found';
+
+      // Subscribes to api.
+      service.getMenu().subscribe((response) => {
+        expect(response).toBeNull();
+        expect(errorMessagingServiceSpy.setupPageErrorMessageFromResponse.calls.count()).toBe(1);
+      }, fail);
+
+      // Responds with the mock
+      const req = httpTestingController.expectOne(webApiUrl);
+      expect(req.request.method).toEqual('GET');
+      req.flush(errorMessage, { status: errorStatus, statusText: errorMessage });
+    });
+  });
+
+  describe('#getAvailablePages', () => {
+    const webApiUrl = ApiConst.PATH_API_ROOT + ApiConst.PATH_AVAILABLE_PAGES;
+
+    it('should return expected response', () => {
+      const expectedResponse = Array(UrlConst.PATH_PRODUCT_LISTING, UrlConst.PATH_PRODUCT_REGISTERING);
+
+      // Subscribes to api.
+      service.getAvailablePages().subscribe((response) => {
+        expect(response).toEqual(expectedResponse);
+        expect(errorMessagingServiceSpy.setupPageErrorMessageFromResponse.calls.count()).toBe(0);
+      }, fail);
+
+      // Responds with the mock
+      const req = httpTestingController.expectOne(webApiUrl);
+      expect(req.request.method).toEqual('GET');
+      req.flush(expectedResponse);
+    });
+
+    it('should return null when response is 404 Not Found', () => {
+      const errorStatus = 404;
+      const errorMessage = '404 Not Found';
+
+      // Subscribes to api.
+      service.getAvailablePages().subscribe((response) => {
+        expect(response).toBeNull();
+        expect(errorMessagingServiceSpy.setupPageErrorMessageFromResponse.calls.count()).toBe(1);
+      }, fail);
+
+      // Responds with the mock
+      const req = httpTestingController.expectOne(webApiUrl);
+      expect(req.request.method).toEqual('GET');
+      req.flush(errorMessage, { status: errorStatus, statusText: errorMessage });
+    });
+  });
+
+  describe('#signOut', () => {
+    const webApiUrl = ApiConst.PATH_API_ROOT + ApiConst.PATH_SIGN_OUT;
+
+    it('should return expected response', () => {
+      const user: User = new User();
+      service.setUser(user);
+
+      // Subscribes to api.
+      service.signOut().subscribe((response) => {
+        expect(service.getUser()).toBeNull();
+        expect(errorMessagingServiceSpy.setupPageErrorMessageFromResponse.calls.count()).toBe(0);
+      });
+
+      // Responds with the mock
+      const req = httpTestingController.expectOne(webApiUrl);
+      expect(req.request.method).toEqual('POST');
+      req.flush(null);
+    });
+  });
+
   describe('#getUser,#setUser', () => {
     it('should return expected data', () => {
       const user: User = createUser();
@@ -127,4 +219,14 @@ function assertUser(accountService: AccountService, user: User) {
   expect(accountService.getUser().userTimezone).toEqual(user.userTimezone);
   expect(accountService.getUser().userTimezoneOffset).toEqual(user.userTimezoneOffset);
   expect(accountService.getUser().userCurrency).toEqual(user.userCurrency);
+}
+
+function createExpectedMenuListResponseDto() {
+  const codeList = new Array('subMenu1', 'subMenu2', 'subMenu3');
+  const menuListResponseDto: MenuListResponseDto = {
+    menuCode: 'menu1',
+    subMenuCodeList: codeList
+  };
+  const expectedMenuListResponseDto = Array(menuListResponseDto);
+  return expectedMenuListResponseDto;
 }
