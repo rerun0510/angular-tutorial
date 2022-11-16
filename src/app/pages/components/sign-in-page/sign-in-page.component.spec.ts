@@ -14,6 +14,8 @@ import { AccountService } from '../../services/account.service';
 import { TitleI18Service } from 'src/app/shared/services/title-i18.service';
 import { of } from 'rxjs';
 import { UrlConst } from '../../constants/url-const';
+import { By } from '@angular/platform-browser';
+import { HtmlElementUtility } from 'src/app/testing/html-element-utility';
 
 describe('SignInPageComponent', () => {
   const expectedSignInRequestDto: SignInRequestDto = createExpectedRequestDto();
@@ -98,6 +100,75 @@ describe('SignInPageComponent', () => {
       const language = 'ja-JP';
       const expectedLanguage = 'ja';
       expect(component[privateMethodName](language)).toEqual(expectedLanguage);
+    });
+  });
+
+  // --------------------------------------------------------------------------------
+  // DOM test cases
+  // --------------------------------------------------------------------------------
+  describe('DOM placeholder', () => {
+    it('title', () => {
+      const htmlInputElement: HTMLInputElement = fixture.debugElement.query(
+        By.css('.sign-in-title-wrapper')
+      ).nativeElement;
+      expect(htmlInputElement.innerText).toContain('EXAMPLE SITE');
+    });
+
+    it('sign in user account', () => {
+      const htmlInputElement: HTMLInputElement = fixture.debugElement.query(
+        By.css('#signin-user-account')
+      ).nativeElement;
+      expect(htmlInputElement.dataset.placeholder).toContain('ユーザアカウント');
+    });
+    it('sign in user password', () => {
+      const htmlInputElement: HTMLInputElement = fixture.debugElement.query(
+        By.css('#signin-user-password')
+      ).nativeElement;
+      expect(htmlInputElement.dataset.placeholder).toContain('パスワード');
+    });
+    it('saveBtn', () => {
+      const htmlInputElement: HTMLInputElement = fixture.debugElement.query(By.css('#sign-in-button')).nativeElement;
+      expect(htmlInputElement.innerText).toContain('サインイン');
+    });
+  });
+
+  describe('DOM input test', () => {
+    it('sign in user account', () => {
+      const expectedValue = 'Username';
+      HtmlElementUtility.setValueToHTMLInputElement(fixture, '#signin-user-account', expectedValue);
+      expect(component.signInUserAccount.value).toEqual(expectedValue);
+    });
+    it('sign in user password', () => {
+      const expectedValue = 'Password';
+      HtmlElementUtility.setValueToHTMLInputElement(fixture, '#signin-user-password', expectedValue);
+      expect(component.signInUserPassword.value).toEqual(expectedValue);
+    });
+  });
+
+  describe('DOM input validation test', () => {
+    it('sign in user account', () => {
+      HtmlElementUtility.setValueToHTMLInputElement(fixture, '#signin-user-account', '');
+      const validationError = fixture.debugElement.query(By.css('.validation-error')).nativeElement;
+      expect(validationError).toBeTruthy();
+    });
+    it('sign in user password', () => {
+      HtmlElementUtility.setValueToHTMLInputElement(fixture, '#signin-user-password', '');
+      const validationError = fixture.debugElement.query(By.css('.validation-error')).nativeElement;
+      expect(validationError).toBeTruthy();
+    });
+  });
+
+  describe('DOM input test', () => {
+    it('Should Enter input and create request', () => {
+      HtmlElementUtility.setValueToHTMLInputElement(fixture, '#signin-user-account', expectedSignInRequestDto.Username);
+      HtmlElementUtility.setValueToHTMLInputElement(
+        fixture,
+        '#signin-user-password',
+        expectedSignInRequestDto.Password
+      );
+      const privateMethodName = 'createSignInRequestDto';
+      const signInRequestDto: SignInRequestDto = component[privateMethodName]();
+      expect(signInRequestDto).toEqual(expectedSignInRequestDto);
     });
   });
 });
