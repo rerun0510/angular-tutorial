@@ -6,6 +6,7 @@ import { RoutingService } from 'src/app/core/services/routing.service';
 import { UrlConst } from '../../constants/url-const';
 import { SignInRequestDto } from '../../models/dtos/requests/sign-in-request-dto';
 import { SignInResponseDto } from '../../models/dtos/responses/sign-in-response-dto';
+import { User } from '../../models/user';
 import { AccountService } from '../../services/account.service';
 
 @Component({
@@ -58,12 +59,9 @@ export class SignInPageComponent implements OnInit {
   }
 
   private getLanguage(language: string): string {
-    console.log('SignInPageComponent #getLanguage() language:' + language);
-
     const CHAR_HYPHEN = '-';
     if (language.indexOf(CHAR_HYPHEN) > 0) {
       const splittedLanguage: string[] = language.split(CHAR_HYPHEN);
-      console.log('SignInPageComponent #getLanguage() splittedLanguage[0]:' + splittedLanguage[0]);
 
       return splittedLanguage[0];
     }
@@ -75,6 +73,8 @@ export class SignInPageComponent implements OnInit {
     const signInResponseDto: Observable<SignInResponseDto> = this.accountService.signIn(signInRequestDto);
     signInResponseDto.subscribe((responseDto) => {
       if (responseDto != null) {
+        // Sets account information.
+        this.setUpUserAccount(responseDto);
         // Moves to the Product listing page.
         this.routingService.navigate(UrlConst.PATH_PRODUCT_LISTING);
       }
@@ -87,5 +87,17 @@ export class SignInPageComponent implements OnInit {
       Username: this.signInUserAccount.value,
       Password: this.signInUserPassword.value
     };
+  }
+
+  private setUpUserAccount(responseDto: SignInResponseDto) {
+    const user: User = new User();
+    user.userAccount = responseDto.userAccount;
+    user.userName = responseDto.userName;
+    user.userLocale = responseDto.userLocale;
+    user.userLanguage = responseDto.userLanguage;
+    user.userTimezone = responseDto.userTimezone;
+    user.userTimezoneOffset = responseDto.userTimezoneOffset;
+    user.userCurrency = responseDto.userCurrency;
+    this.accountService.setUser(user);
   }
 }
