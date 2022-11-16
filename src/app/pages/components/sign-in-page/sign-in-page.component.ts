@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewChecked, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
 import { LoadingService } from 'src/app/core/services/loading.service';
 import { RoutingService } from 'src/app/core/services/routing.service';
+import { TitleI18Service } from 'src/app/shared/services/title-i18.service';
 import { UrlConst } from '../../constants/url-const';
 import { SignInRequestDto } from '../../models/dtos/requests/sign-in-request-dto';
 import { SignInResponseDto } from '../../models/dtos/responses/sign-in-response-dto';
@@ -15,7 +16,7 @@ import { AccountService } from '../../services/account.service';
   templateUrl: './sign-in-page.component.html',
   styleUrls: ['./sign-in-page.component.scss']
 })
-export class SignInPageComponent implements OnInit {
+export class SignInPageComponent implements OnInit, AfterViewChecked {
   signInUserAccount = new FormControl('', [Validators.required]);
   signInUserPassword = new FormControl('', [Validators.required]);
 
@@ -27,8 +28,9 @@ export class SignInPageComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private accountService: AccountService,
-    private loadingService: LoadingService,
     private routingService: RoutingService,
+    private loadingService: LoadingService,
+    private titleI18Service: TitleI18Service,
     public translateService: TranslateService
   ) {}
 
@@ -38,6 +40,13 @@ export class SignInPageComponent implements OnInit {
   ngOnInit(): void {
     // Sets language from browser settings.
     this.setupLanguage();
+  }
+
+  /**
+   * after view checked
+   */
+  ngAfterViewChecked() {
+    this.titleI18Service.setTitle(UrlConst.PATH_SIGN_IN);
   }
 
   /**
