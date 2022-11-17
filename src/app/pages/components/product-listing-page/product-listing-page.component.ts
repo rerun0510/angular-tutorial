@@ -20,6 +20,17 @@ import { SearchParamsService } from '../../services/search-params.service';
   styleUrls: ['./product-listing-page.component.scss']
 })
 export class ProductListingPageComponent implements OnInit, AfterViewChecked, AfterViewInit {
+  constructor(
+    private accountService: AccountService,
+    private formBuilder: FormBuilder,
+    private loadingService: LoadingService,
+    private routingService: RoutingService,
+    private titleI18Service: TitleI18Service,
+    private productService: ProductService,
+    private searchParamsService: SearchParamsService,
+    public translateService: TranslateService
+  ) {}
+
   productName = new FormControl('', []);
   productCode = new FormControl('', []);
   productGenre = new FormControl('', []);
@@ -61,17 +72,6 @@ export class ProductListingPageComponent implements OnInit, AfterViewChecked, Af
   @ViewChild(MatPaginator)
   public paginator: MatPaginator;
   initialPageSize = 50;
-
-  constructor(
-    private accountService: AccountService,
-    private formBuilder: FormBuilder,
-    private loadingService: LoadingService,
-    private routingService: RoutingService,
-    private titleI18Service: TitleI18Service,
-    private productService: ProductService,
-    private searchParamsService: SearchParamsService,
-    public translateService: TranslateService
-  ) {}
 
   /**
    * on init
