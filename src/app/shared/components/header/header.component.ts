@@ -9,6 +9,7 @@ import { AppConst } from 'src/app/pages/constants/app-const';
 import { UrlConst } from 'src/app/pages/constants/url-const';
 import { MenuListResponseDto } from 'src/app/pages/models/dtos/responses/menu-list-response-dto';
 import { AccountService } from 'src/app/pages/services/account.service';
+import { SearchParamsService } from 'src/app/pages/services/search-params.service';
 
 @Component({
   selector: 'app-header',
@@ -30,6 +31,7 @@ export class HeaderComponent implements OnInit {
     private loadingService: LoadingService,
     private matDialog: MatDialog,
     private translateService: TranslateService,
+    private searchParamsService: SearchParamsService,
     public routingService: RoutingService
   ) {}
 
@@ -45,6 +47,13 @@ export class HeaderComponent implements OnInit {
    */
   clickSidenav(): void {
     this.sidenavToggle.emit();
+  }
+
+  /**
+   * Clicks submenu
+   */
+  clickSubmenu(): void {
+    this.searchParamsService.removeProductListingSearchParamsDto();
   }
 
   /**
@@ -83,6 +92,7 @@ export class HeaderComponent implements OnInit {
   private signOut(): void {
     this.loadingService.startLoading();
     this.accountService.signOut().subscribe((res) => {
+      this.searchParamsService.removeProductListingSearchParamsDto();
       this.loadingService.stopLoading();
       this.routingService.navigate(UrlConst.PATH_SIGN_IN);
     });

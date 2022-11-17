@@ -3,6 +3,7 @@ import { RoutingService } from 'src/app/core/services/routing.service';
 import { UrlConst } from 'src/app/pages/constants/url-const';
 import { MenuListResponseDto } from 'src/app/pages/models/dtos/responses/menu-list-response-dto';
 import { AccountService } from 'src/app/pages/services/account.service';
+import { SearchParamsService } from 'src/app/pages/services/search-params.service';
 
 @Component({
   selector: 'app-sidenav',
@@ -19,7 +20,11 @@ export class SidenavComponent implements OnInit {
   // Menu response data
   menuListResponseDto: MenuListResponseDto[];
 
-  constructor(private accountService: AccountService, public routingService: RoutingService) {}
+  constructor(
+    private accountService: AccountService,
+    private searchParamsService: SearchParamsService,
+    public routingService: RoutingService
+  ) {}
 
   /**
    * on init
@@ -32,6 +37,7 @@ export class SidenavComponent implements OnInit {
    * Clicks submenu
    */
   clickSubmenu(): void {
+    this.searchParamsService.removeProductListingSearchParamsDto();
     this.sidenavClose.emit();
   }
 

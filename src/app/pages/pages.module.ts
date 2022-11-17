@@ -10,6 +10,9 @@ import { NgxTranslateModule } from '../ngx-translate/ngx-translate.module';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from '../material/material.module';
 import { CoreModule } from '../core/core.module';
+import { NgxUpperCaseDirectiveModule } from 'ngx-upper-case-directive';
+import { MatPaginatorIntl } from '@angular/material/paginator';
+import { MatPaginatorI18nService } from '../core/services/mat-paginator-i18n.service';
 
 @NgModule({
   declarations: [
@@ -19,7 +22,16 @@ import { CoreModule } from '../core/core.module';
     StockRegisteringPageComponent,
     PurchaseHistoryListingPageComponent
   ],
-  imports: [CommonModule, HttpClientModule, NgxTranslateModule, MaterialModule, ReactiveFormsModule, CoreModule],
+  imports: [
+    CoreModule,
+    CommonModule,
+    HttpClientModule,
+    MaterialModule,
+    NgxTranslateModule,
+    ReactiveFormsModule,
+    NgxUpperCaseDirectiveModule
+  ],
+  providers: [{ provide: MatPaginatorIntl, useClass: MatPaginatorI18nService }],
   exports: [
     SignInPageComponent,
     ProductListingPageComponent,
